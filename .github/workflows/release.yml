@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  release:
+    name: Attach integration zip to release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that manifest.json matches the release tag
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+          tag="${tag#v}"
+          version="$(jq -r .version custom_components/unique_waterontharder/manifest.json)"
+          if [ "$version" != "$tag" ]; then
+            echo "::error::manifest.json version ($version) does not match release tag ($tag)"
+            exit 1
+          fi
+
+      - name: Create zip
+        run: |
+          cd custom_components/unique_waterontharder
+          zip -r ../../unique_waterontharder.zip .
+
+      - name: Upload zip to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: unique_waterontharder.zip

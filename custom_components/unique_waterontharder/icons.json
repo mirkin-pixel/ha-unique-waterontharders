@@ -1,0 +1,18 @@
+{
+  "entity": {
+    "sensor": {
+      "salt_level": {
+        "default": "mdi:shaker-outline"
+      },
+      "regenerations": {
+        "default": "mdi:autorenew"
+      },
+      "average_regeneration_interval": {
+        "default": "mdi:calendar-refresh"
+      },
+      "capacity": {
+        "default": "mdi:water-percent"
+      }
+    }
+  }
+}

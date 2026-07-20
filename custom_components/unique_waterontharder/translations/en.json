@@ -1,0 +1,60 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Set up your Unique water softener via the Unique Smart API.",
+        "data": {
+          "api_key": "API key"
+        },
+        "data_description": {
+          "api_key": "The API key for the Unique Smart API. You can request this key from Unique for your water softener."
+        }
+      },
+      "reauth_confirm": {
+        "description": "The API key is no longer valid. Enter a new API key.",
+        "data": {
+          "api_key": "API key"
+        },
+        "data_description": {
+          "api_key": "The new API key for the Unique Smart API."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Unique Smart API",
+      "invalid_auth": "Invalid API key",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This API key is already configured",
+      "reauth_successful": "Re-authentication was successful"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "salt_level": {
+        "name": "Salt level"
+      },
+      "regenerations": {
+        "name": "Regenerations"
+      },
+      "average_regeneration_interval": {
+        "name": "Average time between regenerations"
+      },
+      "capacity": {
+        "name": "Capacity"
+      },
+      "last_update": {
+        "name": "Last update"
+      },
+      "registered_at": {
+        "name": "Registered at"
+      }
+    },
+    "binary_sensor": {
+      "offline_alert": {
+        "name": "Offline alert"
+      }
+    }
+  }
+}

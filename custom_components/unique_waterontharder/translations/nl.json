@@ -1,0 +1,60 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Stel je Unique waterontharder in via de Unique Smart API.",
+        "data": {
+          "api_key": "API-key"
+        },
+        "data_description": {
+          "api_key": "De API-key voor de Unique Smart API. Deze key kun je bij Unique opvragen voor je waterontharder."
+        }
+      },
+      "reauth_confirm": {
+        "description": "De API-key is niet langer geldig. Voer een nieuwe API-key in.",
+        "data": {
+          "api_key": "API-key"
+        },
+        "data_description": {
+          "api_key": "De nieuwe API-key voor de Unique Smart API."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met de Unique Smart API",
+      "invalid_auth": "Ongeldige API-key",
+      "unknown": "Onverwachte fout"
+    },
+    "abort": {
+      "already_configured": "Deze API-key is al geconfigureerd",
+      "reauth_successful": "Opnieuw aanmelden is gelukt"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "salt_level": {
+        "name": "Zoutniveau"
+      },
+      "regenerations": {
+        "name": "Regeneraties"
+      },
+      "average_regeneration_interval": {
+        "name": "Gemiddelde tijd tussen regeneraties"
+      },
+      "capacity": {
+        "name": "Capaciteit"
+      },
+      "last_update": {
+        "name": "Laatste update"
+      },
+      "registered_at": {
+        "name": "Geregistreerd op"
+      }
+    },
+    "binary_sensor": {
+      "offline_alert": {
+        "name": "Offline-alarm"
+      }
+    }
+  }
+}

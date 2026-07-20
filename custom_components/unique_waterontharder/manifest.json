@@ -1,0 +1,12 @@
+{
+  "domain": "unique_waterontharder",
+  "name": "Unique Waterontharder",
+  "codeowners": ["@mirkin-pixel"],
+  "config_flow": true,
+  "documentation": "https://github.com/mirkin-pixel/ha-unique-waterontharders",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/mirkin-pixel/ha-unique-waterontharders/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
