@@ -1,5 +1,11 @@
 # Unique Water Softener for Home Assistant
 
+[![Validate](https://github.com/mirkin-pixel/ha-unique-waterontharders/actions/workflows/validate.yml/badge.svg)](https://github.com/mirkin-pixel/ha-unique-waterontharders/actions/workflows/validate.yml)
+[![GitHub release](https://img.shields.io/github/v/release/mirkin-pixel/ha-unique-waterontharders)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
+[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![License](https://img.shields.io/github/license/mirkin-pixel/ha-unique-waterontharders)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/mirkin-pixel/ha-unique-waterontharders/total)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
+
 [English](#english) | [Nederlands](#nederlands)
 
 ---
@@ -22,7 +28,7 @@ The integration polls the API every 10 minutes for all softeners linked to your 
 
 ### Installation
 
-Requires Home Assistant 2025.3 or newer.
+Requires Home Assistant 2026.3 or newer.
 
 #### Via HACS (recommended)
 
@@ -109,7 +115,7 @@ De integratie haalt elke 10 minuten de gegevens op van alle ontharders die aan j
 
 ### Installatie
 
-Vereist Home Assistant 2025.3 of nieuwer.
+Vereist Home Assistant 2026.3 of nieuwer.
 
 #### Via HACS (aanbevolen)
 
