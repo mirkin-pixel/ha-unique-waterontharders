@@ -82,7 +82,7 @@ The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key 
 
 ### Development
 
-Tests run with [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component):
+Tests run with [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) and require Python 3.14 or newer:
 
 ```bash
 pip install -r requirements_test.txt
@@ -169,7 +169,7 @@ De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key 
 
 ### Ontwikkeling
 
-Tests draaien met [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component):
+Tests draaien met [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) en vereisen Python 3.14 of nieuwer:
 
 ```bash
 pip install -r requirements_test.txt
