@@ -31,6 +31,6 @@ jobs:
           zip -r ../../unique_waterontharder.zip .
 
       - name: Upload zip to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: unique_waterontharder.zip
