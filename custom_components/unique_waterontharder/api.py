@@ -41,9 +41,13 @@ class UniqueApiClient:
         except TimeoutError as err:
             raise UniqueApiError("Timeout connecting to the Unique Smart API") from err
         except aiohttp.ClientError as err:
-            raise UniqueApiError(f"Error communicating with the Unique Smart API: {err}") from err
+            raise UniqueApiError(
+                f"Error communicating with the Unique Smart API: {err}"
+            ) from err
 
         if not isinstance(data, list):
-            raise UniqueApiError(f"Unexpected response from the Unique Smart API: {data!r}")
+            raise UniqueApiError(
+                f"Unexpected response from the Unique Smart API: {data!r}"
+            )
 
         return data
