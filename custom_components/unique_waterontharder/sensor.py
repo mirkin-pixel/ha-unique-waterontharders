@@ -46,6 +46,23 @@ def _as_float(value: Any) -> float | None:
         return None
 
 
+def _as_number(value: Any) -> int | float | None:
+    """Parse a numeric value, keeping whole numbers integral."""
+    if not isinstance(value, float):
+        # Parse ints directly so large counters keep full precision;
+        # int() would silently truncate a float, so floats skip this.
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            pass
+    number = _as_float(value)
+    if number is None:
+        return None
+    if number.is_integer():
+        return int(number)
+    return number
+
+
 @dataclass(frozen=True, kw_only=True)
 class UniqueSensorEntityDescription(SensorEntityDescription):
     """Describes a Unique water softener sensor."""
@@ -65,7 +82,7 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
         key="regenerations",
         translation_key="regenerations",
         state_class=SensorStateClass.TOTAL_INCREASING,
-        value_fn=lambda data: data.get("regeneraties"),
+        value_fn=lambda data: _as_number(data.get("regeneraties")),
     ),
     UniqueSensorEntityDescription(
         key="average_regeneration_interval",
@@ -78,7 +95,7 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
         key="capacity",
         translation_key="capacity",
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda data: data.get("capaciteit"),
+        value_fn=lambda data: _as_number(data.get("capaciteit")),
     ),
     UniqueSensorEntityDescription(
         key="last_update",
@@ -105,11 +122,21 @@ async def async_setup_entry(
 ) -> None:
     """Set up the sensor platform."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        UniqueSensor(coordinator, serial_number, description)
-        for serial_number in coordinator.data
-        for description in SENSORS
-    )
+    known_serials: set[str] = set()
+
+    def _add_new_softeners() -> None:
+        new_serials = set(coordinator.data) - known_serials
+        if not new_serials:
+            return
+        known_serials.update(new_serials)
+        async_add_entities(
+            UniqueSensor(coordinator, serial_number, description)
+            for serial_number in new_serials
+            for description in SENSORS
+        )
+
+    _add_new_softeners()
+    entry.async_on_unload(coordinator.async_add_listener(_add_new_softeners))
 
 
 class UniqueSensor(UniqueEntity, SensorEntity):

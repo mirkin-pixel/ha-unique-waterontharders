@@ -49,3 +49,7 @@ async def test_offline_alert(
     set_api_response(mock_api, [device_without_alert])
     await _refresh(hass)
     assert hass.states.get(entity_id).state == STATE_UNKNOWN
+
+    set_api_response(mock_api, [{**MOCK_DEVICE, "offline_alert": "not a number"}])
+    await _refresh(hass)
+    assert hass.states.get(entity_id).state == STATE_UNKNOWN

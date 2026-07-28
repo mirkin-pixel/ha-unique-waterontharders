@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
+from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
@@ -14,9 +15,13 @@ from pytest_homeassistant_custom_component.common import (
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
 from custom_components.unique_waterontharder.const import DOMAIN, UPDATE_INTERVAL
-from custom_components.unique_waterontharder.sensor import _as_datetime, _as_float
+from custom_components.unique_waterontharder.sensor import (
+    _as_datetime,
+    _as_float,
+    _as_number,
+)
 
-from .conftest import MOCK_SERIAL, set_api_response, setup_integration
+from .conftest import MOCK_DEVICE, MOCK_SERIAL, set_api_response, setup_integration
 
 
 def _entity_id(hass: HomeAssistant, key: str) -> str | None:
@@ -104,8 +109,41 @@ def test_as_datetime_edge_cases() -> None:
     assert _as_datetime("not a date") is None
 
 
+async def test_numeric_sensors_parse_strings(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_api: AiohttpClientMocker,
+) -> None:
+    """Test that count sensors survive string and garbage API values."""
+    set_api_response(
+        mock_api,
+        [{**MOCK_DEVICE, "regeneraties": "42", "capaciteit": "not a number"}],
+    )
+    assert await setup_integration(hass, mock_config_entry)
+
+    assert hass.states.get(_entity_id(hass, "regenerations")).state == "42"
+    assert hass.states.get(_entity_id(hass, "capacity")).state == STATE_UNKNOWN
+
+
 def test_as_float_edge_cases() -> None:
     """Test parsing of invalid or empty numbers."""
     assert _as_float(None) is None
     assert _as_float("not a number") is None
     assert _as_float("3.5") == 3.5
+
+
+def test_as_number_edge_cases() -> None:
+    """Test that numbers keep their integral form where possible."""
+    assert _as_number(None) is None
+    assert _as_number("not a number") is None
+    assert _as_number("42") == 42
+    assert isinstance(_as_number("42"), int)
+    assert _as_number("3.5") == 3.5
+    assert _as_number("42.0") == 42
+    assert isinstance(_as_number("42.0"), int)
+    # Large counters must not lose precision through a float round-trip
+    assert _as_number(str(2**63 + 1)) == 2**63 + 1
+    # Native floats must not be truncated by the direct int() path
+    assert _as_number(3.5) == 3.5
+    assert _as_number(42.0) == 42
+    assert isinstance(_as_number(42.0), int)

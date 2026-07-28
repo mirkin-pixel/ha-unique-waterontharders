@@ -21,7 +21,7 @@ from custom_components.unique_waterontharder.const import (
     UPDATE_INTERVAL,
 )
 
-from .conftest import MOCK_SERIAL, setup_integration
+from .conftest import MOCK_DEVICE, MOCK_SERIAL, set_api_response, setup_integration
 
 
 async def test_setup_and_unload(
@@ -64,6 +64,53 @@ async def test_setup_cannot_connect_retries(
 
     assert not await setup_integration(hass, mock_config_entry)
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_new_softener_added_after_setup(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_api: AiohttpClientMocker,
+) -> None:
+    """Test that a softener appearing in the API later gets entities."""
+    assert await setup_integration(hass, mock_config_entry)
+
+    entity_registry = er.async_get(hass)
+    new_serial = "87654321"
+    assert (
+        entity_registry.async_get_entity_id(
+            "sensor", DOMAIN, f"{new_serial}_salt_level"
+        )
+        is None
+    )
+
+    set_api_response(
+        mock_api,
+        [MOCK_DEVICE, {**MOCK_DEVICE, "serienummer": int(new_serial)}],
+    )
+    async_fire_time_changed(
+        hass, dt_util.utcnow() + UPDATE_INTERVAL + timedelta(seconds=10)
+    )
+    await hass.async_block_till_done()
+
+    for platform, key in (
+        ("sensor", "salt_level"),
+        ("binary_sensor", "offline_alert"),
+    ):
+        entity_id = entity_registry.async_get_entity_id(
+            platform, DOMAIN, f"{new_serial}_{key}"
+        )
+        assert entity_id is not None
+        assert hass.states.get(entity_id).state not in ("unavailable", None)
+
+    # The original softener is still there and untouched
+    assert (
+        hass.states.get(
+            entity_registry.async_get_entity_id(
+                "sensor", DOMAIN, f"{MOCK_SERIAL}_salt_level"
+            )
+        ).state
+        == "80.0"
+    )
 
 
 async def test_update_failure_marks_entities_unavailable(
