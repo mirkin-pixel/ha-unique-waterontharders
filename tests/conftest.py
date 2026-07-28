@@ -4,11 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
-
 from homeassistant.const import CONF_API_KEY
 from homeassistant.core import HomeAssistant
-
+import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
