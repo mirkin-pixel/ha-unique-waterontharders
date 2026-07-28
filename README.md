@@ -1,8 +1,8 @@
 # Unique Water Softener for Home Assistant
 
-[![Validate](https://github.com/mirkin-pixel/ha-unique-waterontharders/actions/workflows/validate.yml/badge.svg)](https://github.com/mirkin-pixel/ha-unique-waterontharders/actions/workflows/validate.yml)
+[![Validate](https://img.shields.io/github/actions/workflow/status/mirkin-pixel/ha-unique-waterontharders/validate.yml?branch=main&style=for-the-badge&label=Validate)](https://github.com/mirkin-pixel/ha-unique-waterontharders/actions/workflows/validate.yml)
 [![GitHub release](https://img.shields.io/github/v/release/mirkin-pixel/ha-unique-waterontharders?style=for-the-badge)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
-[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5?style=for-the-badge)](https://hacs.xyz/docs/faq/custom_repositories/)
 [![License](https://img.shields.io/github/license/mirkin-pixel/ha-unique-waterontharders?style=for-the-badge)](LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/mirkin-pixel/ha-unique-waterontharders/total?style=for-the-badge)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
 
