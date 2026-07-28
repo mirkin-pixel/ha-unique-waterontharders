@@ -36,5 +36,3 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          # De domain staat (nog) niet in home-assistant/brands
-          ignore: brands
