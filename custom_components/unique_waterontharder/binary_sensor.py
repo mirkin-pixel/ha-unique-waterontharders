@@ -23,10 +23,20 @@ async def async_setup_entry(
 ) -> None:
     """Set up the binary sensor platform."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        UniqueOfflineAlertBinarySensor(coordinator, serial_number)
-        for serial_number in coordinator.data
-    )
+    known_serials: set[str] = set()
+
+    def _add_new_softeners() -> None:
+        new_serials = set(coordinator.data) - known_serials
+        if not new_serials:
+            return
+        known_serials.update(new_serials)
+        async_add_entities(
+            UniqueOfflineAlertBinarySensor(coordinator, serial_number)
+            for serial_number in new_serials
+        )
+
+    _add_new_softeners()
+    entry.async_on_unload(coordinator.async_add_listener(_add_new_softeners))
 
 
 class UniqueOfflineAlertBinarySensor(UniqueEntity, BinarySensorEntity):
@@ -48,4 +58,7 @@ class UniqueOfflineAlertBinarySensor(UniqueEntity, BinarySensorEntity):
         value = self.device_data.get("offline_alert")
         if value is None:
             return None
-        return bool(int(value))
+        try:
+            return bool(int(value))
+        except (TypeError, ValueError):
+            return None
