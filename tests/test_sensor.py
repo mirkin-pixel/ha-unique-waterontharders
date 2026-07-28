@@ -139,3 +139,7 @@ def test_as_number_edge_cases() -> None:
     assert _as_number("42") == 42
     assert isinstance(_as_number("42"), int)
     assert _as_number("3.5") == 3.5
+    assert _as_number("42.0") == 42
+    assert isinstance(_as_number("42.0"), int)
+    # Large counters must not lose precision through a float round-trip
+    assert _as_number(str(2**63 + 1)) == 2**63 + 1

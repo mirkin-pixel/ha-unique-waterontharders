@@ -48,6 +48,10 @@ def _as_float(value: Any) -> float | None:
 
 def _as_number(value: Any) -> int | float | None:
     """Parse a numeric value, keeping whole numbers integral."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        pass
     number = _as_float(value)
     if number is None:
         return None
