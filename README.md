@@ -2,7 +2,7 @@
 
 [![Validate](https://img.shields.io/github/actions/workflow/status/mirkin-pixel/ha-unique-waterontharders/validate.yml?branch=main&style=for-the-badge&label=Validate)](https://github.com/mirkin-pixel/ha-unique-waterontharders/actions/workflows/validate.yml)
 [![GitHub release](https://img.shields.io/github/v/release/mirkin-pixel/ha-unique-waterontharders?style=for-the-badge)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
-[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5?style=for-the-badge)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![HACS](https://img.shields.io/badge/HACS-Default-41BDF5?style=for-the-badge)](https://github.com/hacs/integration)
 [![License](https://img.shields.io/github/license/mirkin-pixel/ha-unique-waterontharders?style=for-the-badge)](LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/mirkin-pixel/ha-unique-waterontharders/total?style=for-the-badge)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
 
@@ -32,11 +32,15 @@ Requires Home Assistant 2026.3 or newer.
 
 #### Via HACS (recommended)
 
+This integration is available in the HACS default store.
+
 1. Open HACS in Home Assistant.
-2. Choose **⋮ → Custom repositories** in the top right corner.
-3. Add this repository URL with type **Integration**.
-4. Search for **Unique Waterontharder** and click **Download**.
-5. Restart Home Assistant.
+2. Search for **Unique Waterontharder** and click **Download**.
+3. Restart Home Assistant.
+
+Or use this direct link:
+
+[![Open your Home Assistant instance and open the repository inside HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mirkin-pixel&repository=ha-unique-waterontharders&category=integration)
 
 #### Manual
 
@@ -119,11 +123,15 @@ Vereist Home Assistant 2026.3 of nieuwer.
 
 #### Via HACS (aanbevolen)
 
+Deze integratie is beschikbaar in de standaard HACS-store.
+
 1. Open HACS in Home Assistant.
-2. Kies rechtsboven **⋮ → Custom repositories**.
-3. Voeg deze repository-URL toe met type **Integration**.
-4. Zoek naar **Unique Waterontharder** en klik op **Download**.
-5. Herstart Home Assistant.
+2. Zoek naar **Unique Waterontharder** en klik op **Download**.
+3. Herstart Home Assistant.
+
+Of gebruik deze directe link:
+
+[![Open your Home Assistant instance and open the repository inside HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=mirkin-pixel&repository=ha-unique-waterontharders&category=integration)
 
 #### Handmatig
 
