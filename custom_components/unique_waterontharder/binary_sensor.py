@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
@@ -11,6 +13,8 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import UniqueConfigEntry, UniqueDataUpdateCoordinator
 from .entity import UniqueEntity
+
+_LOGGER = logging.getLogger(__name__)
 
 # Updates are centralized through the coordinator
 PARALLEL_UPDATES = 0
@@ -61,4 +65,9 @@ class UniqueOfflineAlertBinarySensor(UniqueEntity, BinarySensorEntity):
         try:
             return bool(int(value))
         except (TypeError, ValueError):
+            _LOGGER.debug(
+                "Could not parse 'offline_alert' value %r for serial number %s",
+                value,
+                self._serial_number,
+            )
             return None

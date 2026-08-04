@@ -84,6 +84,25 @@ automation:
 
 The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key as a Bearer token. The API currently has no rate limiting; this integration therefore deliberately polls only once every 10 minutes (the softener itself reports at most once every few hours). Timestamps from the API contain no timezone and are interpreted in the timezone of your Home Assistant installation.
 
+### Troubleshooting
+
+If entities stay `unknown` or `unavailable`, collect the two things below and attach them to an [issue](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues).
+
+**Enable debug logging.** Go to **Settings → Devices & services → Unique Waterontharder**, click the three dots and choose **Enable debug logging**. Reproduce the problem, then choose **Disable debug logging** — Home Assistant downloads the log automatically.
+
+To log across a restart, add this to `configuration.yaml` instead:
+
+```yaml
+logger:
+  default: warning
+  logs:
+    custom_components.unique_waterontharder: debug
+```
+
+Debug logging shows the HTTP status of every poll, the full API response, the serial numbers found, and any value the integration could not parse. The API key is never logged.
+
+**Download diagnostics.** On the same page, choose **Download diagnostics**. The file contains the configuration entry and the last API data, with the API key redacted.
+
 ### Development
 
 Tests run with [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) and require Python 3.14 or newer:
@@ -174,6 +193,25 @@ automation:
 ### Over de API
 
 De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key als Bearer-token. Er is momenteel geen rate-limiting op de API; deze integratie pollt daarom bewust maar één keer per 10 minuten (de ontharder zelf meldt zich hooguit eens per paar uur). Tijdstippen uit de API bevatten geen tijdzone en worden geïnterpreteerd in de tijdzone van je Home Assistant-installatie.
+
+### Problemen oplossen
+
+Blijven entiteiten op `unknown` of `unavailable` staan? Verzamel dan de twee onderstaande zaken en voeg ze toe aan een [issue](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues).
+
+**Debug-logging aanzetten.** Ga naar **Instellingen → Apparaten & diensten → Unique Waterontharder**, klik op de drie puntjes en kies **Debug-logging aanzetten**. Reproduceer het probleem en kies daarna **Debug-logging uitzetten** — Home Assistant downloadt de log dan automatisch.
+
+Wil je ook over een herstart heen loggen, zet dan dit in `configuration.yaml`:
+
+```yaml
+logger:
+  default: warning
+  logs:
+    custom_components.unique_waterontharder: debug
+```
+
+In de debug-log zie je de HTTP-status van elke poll, de volledige API-respons, de gevonden serienummers en elke waarde die de integratie niet kon verwerken. De API-key wordt nooit gelogd.
+
+**Diagnostiek downloaden.** Kies op dezelfde pagina **Diagnostische gegevens downloaden**. Het bestand bevat de configuratie en de laatst opgehaalde API-gegevens, met de API-key weggehaald.
 
 ### Ontwikkeling
 

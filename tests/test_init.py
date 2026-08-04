@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 from datetime import timedelta
+import logging
 
 import aiohttp
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
+import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
@@ -111,6 +113,39 @@ async def test_new_softener_added_after_setup(
         ).state
         == "80.0"
     )
+
+
+async def test_response_without_serial_numbers_warns_once(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    aioclient_mock: AiohttpClientMocker,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that unusable API entries are reported once, and recovery is logged."""
+    caplog.set_level(logging.INFO)
+    unusable = [{"model": "Smart Duo"}]
+    aioclient_mock.get(API_URL, json=unusable)
+
+    assert await setup_integration(hass, mock_config_entry)
+    assert caplog.text.count("none with a 'serienummer' field") == 1
+
+    async def _poll_with(devices: list[dict]) -> None:
+        set_api_response(aioclient_mock, devices)
+        async_fire_time_changed(
+            hass, dt_util.utcnow() + UPDATE_INTERVAL + timedelta(seconds=10)
+        )
+        await hass.async_block_till_done()
+
+    # The same broken response does not warn again
+    await _poll_with(unusable)
+    assert caplog.text.count("none with a 'serienummer' field") == 1
+
+    # Recovery is logged, and a later relapse warns again
+    await _poll_with([MOCK_DEVICE])
+    assert "returns serial numbers again" in caplog.text
+
+    await _poll_with(unusable)
+    assert caplog.text.count("none with a 'serienummer' field") == 2
 
 
 async def test_update_failure_marks_entities_unavailable(
