@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+import logging
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -21,6 +22,8 @@ from homeassistant.util import dt as dt_util
 from .coordinator import UniqueConfigEntry, UniqueDataUpdateCoordinator
 from .entity import UniqueEntity
 
+_LOGGER = logging.getLogger(__name__)
+
 # Updates are centralized through the coordinator
 PARALLEL_UPDATES = 0
 
@@ -32,6 +35,7 @@ def _as_datetime(value: Any) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(str(value))
     except ValueError:
+        _LOGGER.debug("Could not parse %r as a timestamp", value)
         return None
     return parsed.replace(tzinfo=dt_util.get_default_time_zone())
 
@@ -43,6 +47,7 @@ def _as_float(value: Any) -> float | None:
     try:
         return float(value)
     except (TypeError, ValueError):
+        _LOGGER.debug("Could not parse %r as a number", value)
         return None
 
 

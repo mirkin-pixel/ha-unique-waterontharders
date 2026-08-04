@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any
 
 import aiohttp
 
 from .const import API_URL
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class UniqueApiError(Exception):
@@ -32,6 +35,7 @@ class UniqueApiClient:
         try:
             async with asyncio.timeout(30):
                 response = await self._session.get(API_URL, headers=headers)
+                _LOGGER.debug("GET %s returned HTTP %s", API_URL, response.status)
                 if response.status in (401, 403):
                     raise UniqueApiAuthError("Invalid API key")
                 response.raise_for_status()
@@ -49,5 +53,7 @@ class UniqueApiClient:
             raise UniqueApiError(
                 f"Unexpected response from the Unique Smart API: {data!r}"
             )
+
+        _LOGGER.debug("Received %d device(s) from the API: %s", len(data), data)
 
         return data
