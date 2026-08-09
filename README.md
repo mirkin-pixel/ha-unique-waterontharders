@@ -1,6 +1,6 @@
 # Unique Water Softener for Home Assistant
 
-[![HACS](https://img.shields.io/badge/HACS-Default-41BDF5?style=for-the-badge)](https://github.com/hacs/integration)
+[![HACS](https://img.shields.io/badge/HACS-Default-orange?style=for-the-badge)](https://github.com/hacs/integration)
 [![GitHub release](https://img.shields.io/github/v/release/mirkin-pixel/ha-unique-waterontharders?style=for-the-badge)](https://github.com/mirkin-pixel/ha-unique-waterontharders/releases)
 
 [English](#english) | [Nederlands](#nederlands)
