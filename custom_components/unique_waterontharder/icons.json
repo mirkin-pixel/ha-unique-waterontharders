@@ -11,7 +11,7 @@
         "default": "mdi:calendar-refresh"
       },
       "capacity": {
-        "default": "mdi:water-percent"
+        "default": "mdi:beaker-outline"
       }
     }
   }
