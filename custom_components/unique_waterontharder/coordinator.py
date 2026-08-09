@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import tzinfo
+from datetime import timedelta, tzinfo
 import logging
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import UniqueApiAuthError, UniqueApiClient, UniqueApiError
-from .const import DOMAIN, UPDATE_INTERVAL
+from .const import DEFAULT_SCAN_INTERVAL_MINUTES, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +38,11 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
             _LOGGER,
             config_entry=config_entry,
             name=DOMAIN,
-            update_interval=UPDATE_INTERVAL,
+            update_interval=timedelta(
+                minutes=config_entry.options.get(
+                    CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL_MINUTES
+                )
+            ),
         )
         self.client = client
         self.api_timezone = api_timezone
@@ -48,9 +53,15 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
         try:
             devices = await self.client.async_get_data()
         except UniqueApiAuthError as err:
-            raise ConfigEntryAuthFailed(err) from err
+            raise ConfigEntryAuthFailed(
+                translation_domain=DOMAIN, translation_key="invalid_auth"
+            ) from err
         except UniqueApiError as err:
-            raise UpdateFailed(err) from err
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="cannot_connect",
+                translation_placeholders={"error": str(err)},
+            ) from err
 
         data: dict[str, dict[str, Any]] = {}
         skipped: list[Any] = []

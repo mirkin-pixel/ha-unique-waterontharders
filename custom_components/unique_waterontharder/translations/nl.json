@@ -18,6 +18,15 @@
         "data_description": {
           "api_key": "De nieuwe API-key voor de Unique Smart API."
         }
+      },
+      "reconfigure": {
+        "description": "Voer een andere API-key in voor deze configuratie.",
+        "data": {
+          "api_key": "API-key"
+        },
+        "data_description": {
+          "api_key": "De nieuwe API-key voor de Unique Smart API."
+        }
       }
     },
     "error": {
@@ -27,7 +36,30 @@
     },
     "abort": {
       "already_configured": "Deze API-key is al geconfigureerd",
-      "reauth_successful": "Opnieuw aanmelden is gelukt"
+      "reauth_successful": "Opnieuw aanmelden is gelukt",
+      "reconfigure_successful": "De API-key is bijgewerkt"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Pollinterval",
+        "description": "Hoe vaak Home Assistant de Unique Smart API om nieuwe gegevens vraagt.",
+        "data": {
+          "scan_interval": "Pollinterval"
+        },
+        "data_description": {
+          "scan_interval": "In minuten. De ontharder zelf meldt zich hooguit eens per paar uur, dus een korter interval levert zelden versere gegevens op."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "invalid_auth": {
+      "message": "De API-key is geweigerd door de Unique Smart API"
+    },
+    "cannot_connect": {
+      "message": "Kon geen gegevens ophalen bij de Unique Smart API: {error}"
     }
   },
   "entity": {
