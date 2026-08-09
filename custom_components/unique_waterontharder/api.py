@@ -48,6 +48,12 @@ class UniqueApiClient:
             raise UniqueApiError(
                 f"Error communicating with the Unique Smart API: {err}"
             ) from err
+        except ValueError as err:
+            # An empty or malformed body would otherwise surface as an
+            # unexpected error, complete with a traceback in the log.
+            raise UniqueApiError(
+                f"Could not decode the response from the Unique Smart API: {err}"
+            ) from err
 
         if not isinstance(data, list):
             raise UniqueApiError(

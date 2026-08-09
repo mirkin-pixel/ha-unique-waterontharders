@@ -8,13 +8,19 @@ from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
+import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
 )
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.unique_waterontharder.const import DOMAIN, UPDATE_INTERVAL
+from custom_components.unique_waterontharder.const import (
+    API_TIMEZONE,
+    DEFAULT_DEVICE_NAME,
+    DOMAIN,
+    UPDATE_INTERVAL,
+)
 from custom_components.unique_waterontharder.sensor import (
     _as_datetime,
     _as_float,
@@ -47,10 +53,24 @@ async def test_sensor_states(
     assert hass.states.get(_entity_id(hass, "capacity")).state == "10"
 
     expected = datetime.fromisoformat("2025-12-25 04:26:22").replace(
-        tzinfo=dt_util.get_default_time_zone()
+        tzinfo=await dt_util.async_get_time_zone(API_TIMEZONE)
     )
     last_update = hass.states.get(_entity_id(hass, "last_update"))
     assert dt_util.parse_datetime(last_update.state) == expected
+
+
+async def test_timestamps_use_the_api_time_zone(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_api: AiohttpClientMocker,
+) -> None:
+    """Test that timestamps are read in the API's time zone, not Home Assistant's."""
+    await hass.config.async_set_time_zone("America/New_York")
+    assert await setup_integration(hass, mock_config_entry)
+
+    # '2025-12-25 04:26:22' in Europe/Amsterdam (UTC+1 in December)
+    last_update = hass.states.get(_entity_id(hass, "last_update"))
+    assert last_update.state == "2025-12-25T03:26:22+00:00"
 
 
 async def test_registered_at_disabled_by_default(
@@ -82,6 +102,38 @@ async def test_device_info(
     assert device.name == "Unique Smart Duo"
 
 
+@pytest.mark.parametrize("model", [None, ""], ids=["null", "empty"])
+async def test_device_info_without_model(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_api: AiohttpClientMocker,
+    model: str | None,
+) -> None:
+    """Test the device name when the API reports no usable model."""
+    set_api_response(mock_api, [{**MOCK_DEVICE, "model": model}])
+    assert await setup_integration(hass, mock_config_entry)
+
+    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    assert device is not None
+    assert device.model is None
+    assert device.name == DEFAULT_DEVICE_NAME
+
+
+async def test_device_info_with_missing_model_key(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_api: AiohttpClientMocker,
+) -> None:
+    """Test the device name when the API omits the model field entirely."""
+    device_data = {key: value for key, value in MOCK_DEVICE.items() if key != "model"}
+    set_api_response(mock_api, [device_data])
+    assert await setup_integration(hass, mock_config_entry)
+
+    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    assert device is not None
+    assert device.name == DEFAULT_DEVICE_NAME
+
+
 async def test_softener_missing_from_response(
     hass: HomeAssistant,
     mock_config_entry: MockConfigEntry,
@@ -102,11 +154,16 @@ async def test_softener_missing_from_response(
     assert hass.states.get(entity_id).state == "unavailable"
 
 
-def test_as_datetime_edge_cases() -> None:
-    """Test parsing of invalid or empty timestamps."""
-    assert _as_datetime(None) is None
-    assert _as_datetime("") is None
-    assert _as_datetime("not a date") is None
+async def test_as_datetime_edge_cases() -> None:
+    """Test parsing of invalid, empty or already offset-aware timestamps."""
+    api_timezone = await dt_util.async_get_time_zone(API_TIMEZONE)
+    assert _as_datetime(None, api_timezone) is None
+    assert _as_datetime("", api_timezone) is None
+    assert _as_datetime("not a date", api_timezone) is None
+    # An offset in the response wins over the assumed API time zone
+    assert _as_datetime(
+        "2025-12-25T04:26:22+05:00", api_timezone
+    ) == datetime.fromisoformat("2025-12-25T04:26:22+05:00")
 
 
 async def test_numeric_sensors_parse_strings(

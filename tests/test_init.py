@@ -8,7 +8,7 @@ import logging
 import aiohttp
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
 import pytest
 from pytest_homeassistant_custom_component.common import (
@@ -17,6 +17,7 @@ from pytest_homeassistant_custom_component.common import (
 )
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
+from custom_components.unique_waterontharder import async_remove_config_entry_device
 from custom_components.unique_waterontharder.const import (
     API_URL,
     DOMAIN,
@@ -146,6 +147,30 @@ async def test_response_without_serial_numbers_warns_once(
 
     await _poll_with(unusable)
     assert caplog.text.count("none with a 'serienummer' field") == 2
+
+
+async def test_stale_device_can_be_removed(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_api: AiohttpClientMocker,
+) -> None:
+    """Test that only softeners missing from the API may be removed."""
+    assert await setup_integration(hass, mock_config_entry)
+
+    device_registry = dr.async_get(hass)
+    device = device_registry.async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    assert device is not None
+
+    # A softener that the API still reports must not be removable
+    assert not await async_remove_config_entry_device(hass, mock_config_entry, device)
+
+    set_api_response(mock_api, [])
+    async_fire_time_changed(
+        hass, dt_util.utcnow() + UPDATE_INTERVAL + timedelta(seconds=10)
+    )
+    await hass.async_block_till_done()
+
+    assert await async_remove_config_entry_device(hass, mock_config_entry, device)
 
 
 async def test_update_failure_marks_entities_unavailable(

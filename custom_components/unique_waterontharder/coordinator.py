@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import tzinfo
 import logging
 from typing import Any
 
@@ -28,6 +29,7 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
         hass: HomeAssistant,
         config_entry: UniqueConfigEntry,
         client: UniqueApiClient,
+        api_timezone: tzinfo,
     ) -> None:
         """Initialize the coordinator."""
         super().__init__(
@@ -38,6 +40,7 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
             update_interval=UPDATE_INTERVAL,
         )
         self.client = client
+        self.api_timezone = api_timezone
         self._warned_no_serial_numbers = False
 
     async def _async_update_data(self) -> dict[str, dict[str, Any]]:

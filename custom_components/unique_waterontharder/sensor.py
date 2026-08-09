@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, tzinfo
 import logging
 from typing import Any
 
@@ -17,7 +17,6 @@ from homeassistant.components.sensor import (
 from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-from homeassistant.util import dt as dt_util
 
 from .coordinator import UniqueConfigEntry, UniqueDataUpdateCoordinator
 from .entity import UniqueEntity
@@ -28,8 +27,8 @@ _LOGGER = logging.getLogger(__name__)
 PARALLEL_UPDATES = 0
 
 
-def _as_datetime(value: Any) -> datetime | None:
-    """Parse an API timestamp ('YYYY-MM-DD HH:MM:SS', local time)."""
+def _as_datetime(value: Any, api_timezone: tzinfo) -> datetime | None:
+    """Parse an API timestamp ('YYYY-MM-DD HH:MM:SS', API local time)."""
     if not value:
         return None
     try:
@@ -37,7 +36,9 @@ def _as_datetime(value: Any) -> datetime | None:
     except ValueError:
         _LOGGER.debug("Could not parse %r as a timestamp", value)
         return None
-    return parsed.replace(tzinfo=dt_util.get_default_time_zone())
+    if parsed.tzinfo is not None:
+        return parsed
+    return parsed.replace(tzinfo=api_timezone)
 
 
 def _as_float(value: Any) -> float | None:
@@ -72,7 +73,9 @@ def _as_number(value: Any) -> int | float | None:
 class UniqueSensorEntityDescription(SensorEntityDescription):
     """Describes a Unique water softener sensor."""
 
-    value_fn: Callable[[dict[str, Any]], Any]
+    # The API time zone is passed to every value function so that timestamp
+    # sensors can attach it; the others ignore it.
+    value_fn: Callable[[dict[str, Any], tzinfo], Any]
 
 
 SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
@@ -81,33 +84,33 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
         translation_key="salt_level",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: _as_float(data.get("zout_niveau")),
+        value_fn=lambda data, _tz: _as_float(data.get("zout_niveau")),
     ),
     UniqueSensorEntityDescription(
         key="regenerations",
         translation_key="regenerations",
         state_class=SensorStateClass.TOTAL_INCREASING,
-        value_fn=lambda data: _as_number(data.get("regeneraties")),
+        value_fn=lambda data, _tz: _as_number(data.get("regeneraties")),
     ),
     UniqueSensorEntityDescription(
         key="average_regeneration_interval",
         translation_key="average_regeneration_interval",
         native_unit_of_measurement=UnitOfTime.DAYS,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: _as_float(data.get("gemiddeld")),
+        value_fn=lambda data, _tz: _as_float(data.get("gemiddeld")),
     ),
     UniqueSensorEntityDescription(
         key="capacity",
         translation_key="capacity",
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda data: _as_number(data.get("capaciteit")),
+        value_fn=lambda data, _tz: _as_number(data.get("capaciteit")),
     ),
     UniqueSensorEntityDescription(
         key="last_update",
         translation_key="last_update",
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda data: _as_datetime(data.get("laatste_update")),
+        value_fn=lambda data, tz: _as_datetime(data.get("laatste_update"), tz),
     ),
     UniqueSensorEntityDescription(
         key="registered_at",
@@ -115,7 +118,7 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
-        value_fn=lambda data: _as_datetime(data.get("datum_aangemaakt")),
+        value_fn=lambda data, tz: _as_datetime(data.get("datum_aangemaakt"), tz),
     ),
 )
 
@@ -163,4 +166,6 @@ class UniqueSensor(UniqueEntity, SensorEntity):
     @property
     def native_value(self) -> Any:
         """Return the sensor value."""
-        return self.entity_description.value_fn(self.device_data)
+        return self.entity_description.value_fn(
+            self.device_data, self.coordinator.api_timezone
+        )

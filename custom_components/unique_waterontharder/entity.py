@@ -7,7 +7,7 @@ from typing import Any
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, MANUFACTURER
+from .const import DEFAULT_DEVICE_NAME, DOMAIN, MANUFACTURER
 from .coordinator import UniqueDataUpdateCoordinator
 
 
@@ -22,13 +22,15 @@ class UniqueEntity(CoordinatorEntity[UniqueDataUpdateCoordinator]):
         """Initialize the entity."""
         super().__init__(coordinator)
         self._serial_number = serial_number
-        device = self.device_data
+        # The API may omit 'model' or return it as null; both fall back to a
+        # generic name instead of leaking "None" into the device registry.
+        model = self.device_data.get("model") or None
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, serial_number)},
             manufacturer=MANUFACTURER,
-            model=device.get("model"),
+            model=model,
             serial_number=serial_number,
-            name=f"{MANUFACTURER} {device.get('model', 'waterontharder')}",
+            name=f"{MANUFACTURER} {model}" if model else DEFAULT_DEVICE_NAME,
         )
 
     @property
