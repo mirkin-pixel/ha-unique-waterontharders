@@ -14,7 +14,12 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfTime
+from homeassistant.const import (
+    PERCENTAGE,
+    EntityCategory,
+    UnitOfTime,
+    UnitOfVolume,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
@@ -102,6 +107,12 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
     UniqueSensorEntityDescription(
         key="capacity",
         translation_key="capacity",
+        # The API does not document the unit. The values match the resin volume
+        # of a softener in litres; the alternative, a hardness capacity in
+        # degrees dH per cubic metre, would be roughly five times higher for
+        # the same cylinder. Deliberately no state class: this is a fixed
+        # property of the hardware, not a measurement to keep statistics on.
+        native_unit_of_measurement=UnitOfVolume.LITERS,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data, _tz: _as_number(data.get("capaciteit")),
     ),

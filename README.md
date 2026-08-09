@@ -18,7 +18,7 @@ The integration polls the API every 10 minutes for all softeners linked to your 
 | Salt level | Sensor (%) | The available salt level in percent |
 | Regenerations | Sensor | The total number of regenerations |
 | Average time between regenerations | Sensor (days) | The average time in days between regenerations |
-| Capacity | Sensor (diagnostic) | The resin capacity |
+| Capacity | Sensor (diagnostic, L) | The amount of resin in the cylinder |
 | Last update | Sensor (diagnostic) | Time of the last report from the softener |
 | Registered at | Sensor (diagnostic, disabled by default) | The registration date of the softener |
 | Offline alert | Binary sensor (problem) | On when the softener has not been seen for a longer period |
@@ -91,6 +91,8 @@ automation:
 
 The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key as a Bearer token. The API currently has no rate limiting; this integration therefore deliberately polls only once every 10 minutes by default (the softener itself reports at most once every few hours), adjustable between 5 minutes and 24 hours. Timestamps from the API contain no UTC offset and are interpreted as Dutch time (`Europe/Amsterdam`), the local time of the service, regardless of the timezone of your own Home Assistant installation.
 
+The API does not document the unit of `capaciteit`. It is read as litres of resin, the volume of the cylinder. A hardness capacity in °dH·m³ would be roughly five to six times higher for the same cylinder, so if your softener reports a value in that range instead, please open an issue.
+
 ### Troubleshooting
 
 If entities stay `unknown` or `unavailable`, collect the two things below and attach them to an [issue](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues).
@@ -138,7 +140,7 @@ De integratie haalt elke 10 minuten de gegevens op van alle ontharders die aan j
 | Zoutniveau | Sensor (%) | Het beschikbare zoutniveau in procenten |
 | Regeneraties | Sensor | Het totaal aantal regeneraties |
 | Gemiddelde tijd tussen regeneraties | Sensor (dagen) | De gemiddelde tijd in dagen tussen regeneraties |
-| Capaciteit | Sensor (diagnostisch) | De hoeveelheid hars-capaciteit |
+| Capaciteit | Sensor (diagnostisch, L) | De hoeveelheid hars in de cilinder |
 | Laatste update | Sensor (diagnostisch) | Tijdstip van de laatste melding van de ontharder |
 | Geregistreerd op | Sensor (diagnostisch, standaard uit) | De registratiedatum van de ontharder |
 | Offline-alarm | Binary sensor (probleem) | Aan wanneer de ontharder voor langere tijd niet gezien is |
@@ -210,6 +212,8 @@ automation:
 ### Over de API
 
 De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key als Bearer-token. Er is momenteel geen rate-limiting op de API; deze integratie pollt daarom bewust standaard maar één keer per 10 minuten (de ontharder zelf meldt zich hooguit eens per paar uur), instelbaar tussen 5 minuten en 24 uur. Tijdstippen uit de API bevatten geen UTC-offset en worden gelezen als Nederlandse tijd (`Europe/Amsterdam`), de lokale tijd van de dienst, ongeacht de tijdzone van je eigen Home Assistant-installatie.
+
+De API documenteert de eenheid van `capaciteit` niet. Die wordt gelezen als liter hars, de inhoud van de cilinder. Een hardheidscapaciteit in °dH·m³ zou voor dezelfde cilinder ongeveer vijf tot zes keer hoger uitvallen; meldt jouw ontharder een waarde in die orde, open dan een issue.
 
 ### Problemen oplossen
 

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from homeassistant.const import STATE_UNKNOWN
+from homeassistant.components.sensor import ATTR_STATE_CLASS
+from homeassistant.const import ATTR_UNIT_OF_MEASUREMENT, STATE_UNKNOWN, UnitOfVolume
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
@@ -50,7 +51,11 @@ async def test_sensor_states(
         hass.states.get(_entity_id(hass, "average_regeneration_interval")).state
         == "3.5"
     )
-    assert hass.states.get(_entity_id(hass, "capacity")).state == "10"
+    capacity = hass.states.get(_entity_id(hass, "capacity"))
+    assert capacity.state == "10"
+    assert capacity.attributes[ATTR_UNIT_OF_MEASUREMENT] == UnitOfVolume.LITERS
+    # A fixed property of the hardware, so no long-term statistics
+    assert ATTR_STATE_CLASS not in capacity.attributes
 
     expected = datetime.fromisoformat("2025-12-25 04:26:22").replace(
         tzinfo=await dt_util.async_get_time_zone(API_TIMEZONE)
