@@ -18,6 +18,15 @@
         "data_description": {
           "api_key": "The new API key for the Unique Smart API."
         }
+      },
+      "reconfigure": {
+        "description": "Enter a different API key for this configuration.",
+        "data": {
+          "api_key": "API key"
+        },
+        "data_description": {
+          "api_key": "The new API key for the Unique Smart API."
+        }
       }
     },
     "error": {
@@ -27,7 +36,30 @@
     },
     "abort": {
       "already_configured": "This API key is already configured",
-      "reauth_successful": "Re-authentication was successful"
+      "reauth_successful": "Re-authentication was successful",
+      "reconfigure_successful": "The API key was updated"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Poll interval",
+        "description": "How often Home Assistant asks the Unique Smart API for new data.",
+        "data": {
+          "scan_interval": "Poll interval"
+        },
+        "data_description": {
+          "scan_interval": "In minutes. The softener itself reports at most once every few hours, so a shorter interval rarely yields fresher data."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "invalid_auth": {
+      "message": "The API key was rejected by the Unique Smart API"
+    },
+    "cannot_connect": {
+      "message": "Could not fetch data from the Unique Smart API: {error}"
     }
   },
   "entity": {

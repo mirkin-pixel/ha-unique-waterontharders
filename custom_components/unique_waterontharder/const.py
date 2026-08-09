@@ -11,7 +11,13 @@ API_URL = "https://unique-smart.nl/api/v1/data"
 # zone would shift them for everyone outside the Netherlands.
 API_TIMEZONE = "Europe/Amsterdam"
 
-UPDATE_INTERVAL = timedelta(minutes=10)
+DEFAULT_SCAN_INTERVAL_MINUTES = 10
+UPDATE_INTERVAL = timedelta(minutes=DEFAULT_SCAN_INTERVAL_MINUTES)
+
+# The softener itself reports at most once every few hours, so polling faster
+# than this only loads the API without ever yielding fresher data.
+MIN_SCAN_INTERVAL_MINUTES = 5
+MAX_SCAN_INTERVAL_MINUTES = 1440
 
 MANUFACTURER = "Unique"
 

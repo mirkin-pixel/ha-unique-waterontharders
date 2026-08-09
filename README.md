@@ -52,6 +52,14 @@ Or use this direct link:
 
 The integration validates the key immediately and then automatically creates a device for every softener in your account.
 
+#### Options
+
+Under **Configure** you can set how often the API is polled, between 5 minutes and 24 hours (default: 10 minutes). The softener itself reports at most once every few hours, so a shorter interval rarely yields fresher data. Changing the interval reloads the integration.
+
+#### Changing the API key
+
+Choose **Reconfigure** in the three-dot menu of the configuration entry to enter a different API key without losing your entities. If Unique revokes the key, Home Assistant asks for a new one by itself.
+
 ### Removal
 
 1. Go to **Settings → Devices & services → Unique Waterontharder**.
@@ -81,7 +89,7 @@ automation:
 
 ### About the API
 
-The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key as a Bearer token. The API currently has no rate limiting; this integration therefore deliberately polls only once every 10 minutes (the softener itself reports at most once every few hours). Timestamps from the API contain no UTC offset and are interpreted as Dutch time (`Europe/Amsterdam`), the local time of the service, regardless of the timezone of your own Home Assistant installation.
+The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key as a Bearer token. The API currently has no rate limiting; this integration therefore deliberately polls only once every 10 minutes by default (the softener itself reports at most once every few hours), adjustable between 5 minutes and 24 hours. Timestamps from the API contain no UTC offset and are interpreted as Dutch time (`Europe/Amsterdam`), the local time of the service, regardless of the timezone of your own Home Assistant installation.
 
 ### Troubleshooting
 
@@ -100,7 +108,7 @@ logger:
 
 Debug logging shows the HTTP status of every poll, the full API response, the serial numbers found, and any value the integration could not parse. The API key is never logged.
 
-**Download diagnostics.** On the same page, choose **Download diagnostics**. The file contains the configuration entry and the last API data, with the API key redacted.
+**Download diagnostics.** On the same page, choose **Download diagnostics**. The file contains the configuration entry, the selected options and the last API data. The API key and the serial numbers are redacted, so the file is safe to attach to an issue.
 
 ### Development
 
@@ -164,6 +172,14 @@ Of gebruik deze directe link:
 
 De integratie valideert de key direct en maakt daarna automatisch een apparaat aan voor elke ontharder in je account.
 
+#### Opties
+
+Via **Configureren** stel je in hoe vaak de API wordt gepolld, tussen 5 minuten en 24 uur (standaard: 10 minuten). De ontharder zelf meldt zich hooguit eens per paar uur, dus een korter interval levert zelden versere gegevens op. Na een wijziging wordt de integratie opnieuw geladen.
+
+#### API-key wijzigen
+
+Kies **Herconfigureren** in het menu met drie puntjes achter de configuratie om een andere API-key in te voeren zonder je entiteiten te verliezen. Trekt Unique de key in, dan vraagt Home Assistant er zelf om een nieuwe.
+
 ### Verwijderen
 
 1. Ga naar **Instellingen → Apparaten & diensten → Unique Waterontharder**.
@@ -193,7 +209,7 @@ automation:
 
 ### Over de API
 
-De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key als Bearer-token. Er is momenteel geen rate-limiting op de API; deze integratie pollt daarom bewust maar één keer per 10 minuten (de ontharder zelf meldt zich hooguit eens per paar uur). Tijdstippen uit de API bevatten geen UTC-offset en worden gelezen als Nederlandse tijd (`Europe/Amsterdam`), de lokale tijd van de dienst, ongeacht de tijdzone van je eigen Home Assistant-installatie.
+De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key als Bearer-token. Er is momenteel geen rate-limiting op de API; deze integratie pollt daarom bewust standaard maar één keer per 10 minuten (de ontharder zelf meldt zich hooguit eens per paar uur), instelbaar tussen 5 minuten en 24 uur. Tijdstippen uit de API bevatten geen UTC-offset en worden gelezen als Nederlandse tijd (`Europe/Amsterdam`), de lokale tijd van de dienst, ongeacht de tijdzone van je eigen Home Assistant-installatie.
 
 ### Problemen oplossen
 
@@ -212,7 +228,7 @@ logger:
 
 In de debug-log zie je de HTTP-status van elke poll, de volledige API-respons, de gevonden serienummers en elke waarde die de integratie niet kon verwerken. De API-key wordt nooit gelogd.
 
-**Diagnostiek downloaden.** Kies op dezelfde pagina **Diagnostische gegevens downloaden**. Het bestand bevat de configuratie en de laatst opgehaalde API-gegevens, met de API-key weggehaald.
+**Diagnostiek downloaden.** Kies op dezelfde pagina **Diagnostische gegevens downloaden**. Het bestand bevat de configuratie, de gekozen opties en de laatst opgehaalde API-gegevens. De API-key en de serienummers zijn weggehaald, dus je kunt het bestand veilig aan een issue hangen.
 
 ### Ontwikkeling
 
