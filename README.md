@@ -60,6 +60,8 @@ The integration validates the key immediately and then automatically creates a d
 
 No data is left behind; the API key is removed together with the configuration.
 
+To remove a single softener that is no longer linked to your API key, open its device page and choose **Delete**. Softeners that the API still reports cannot be deleted this way: they would simply reappear on the next poll. Nothing is ever removed automatically, so a temporarily incomplete API response cannot take your history with it.
+
 ### Example automation
 
 Notification when the salt is running low:
@@ -79,7 +81,7 @@ automation:
 
 ### About the API
 
-The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key as a Bearer token. The API currently has no rate limiting; this integration therefore deliberately polls only once every 10 minutes (the softener itself reports at most once every few hours). Timestamps from the API contain no timezone and are interpreted in the timezone of your Home Assistant installation.
+The integration uses `GET https://unique-smart.nl/api/v1/data` with the API key as a Bearer token. The API currently has no rate limiting; this integration therefore deliberately polls only once every 10 minutes (the softener itself reports at most once every few hours). Timestamps from the API contain no UTC offset and are interpreted as Dutch time (`Europe/Amsterdam`), the local time of the service, regardless of the timezone of your own Home Assistant installation.
 
 ### Troubleshooting
 
@@ -170,6 +172,8 @@ De integratie valideert de key direct en maakt daarna automatisch een apparaat a
 
 Er blijven geen gegevens achter; de API-key wordt samen met de configuratie verwijderd.
 
+Wil je één losse ontharder verwijderen die niet meer aan je API-key hangt, open dan de apparaatpagina en kies **Verwijderen**. Ontharders die de API nog wél meldt, kun je zo niet verwijderen: die zouden bij de volgende poll gewoon terugkomen. Er wordt nooit automatisch iets verwijderd, zodat een tijdelijk incompleet API-antwoord niet je historie meesleept.
+
 ### Voorbeeldautomatisering
 
 Melding wanneer het zout bijna op is:
@@ -189,7 +193,7 @@ automation:
 
 ### Over de API
 
-De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key als Bearer-token. Er is momenteel geen rate-limiting op de API; deze integratie pollt daarom bewust maar één keer per 10 minuten (de ontharder zelf meldt zich hooguit eens per paar uur). Tijdstippen uit de API bevatten geen tijdzone en worden geïnterpreteerd in de tijdzone van je Home Assistant-installatie.
+De integratie gebruikt `GET https://unique-smart.nl/api/v1/data` met de API-key als Bearer-token. Er is momenteel geen rate-limiting op de API; deze integratie pollt daarom bewust maar één keer per 10 minuten (de ontharder zelf meldt zich hooguit eens per paar uur). Tijdstippen uit de API bevatten geen UTC-offset en worden gelezen als Nederlandse tijd (`Europe/Amsterdam`), de lokale tijd van de dienst, ongeacht de tijdzone van je eigen Home Assistant-installatie.
 
 ### Problemen oplossen
 
