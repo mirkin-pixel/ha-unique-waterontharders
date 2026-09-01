@@ -158,7 +158,9 @@ async def test_stale_device_can_be_removed(
     assert await setup_integration(hass, mock_config_entry)
 
     device_registry = dr.async_get(hass)
-    device = device_registry.async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    device = device_registry.async_get_device_by_identifier(
+        (DOMAIN, MOCK_SERIAL), mock_config_entry.entry_id
+    )
     assert device is not None
 
     # A softener that the API still reports must not be removable

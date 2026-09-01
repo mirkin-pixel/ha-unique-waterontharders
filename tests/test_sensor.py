@@ -99,7 +99,9 @@ async def test_device_info(
     """Test the device registry entry for a softener."""
     assert await setup_integration(hass, mock_config_entry)
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, MOCK_SERIAL), mock_config_entry.entry_id
+    )
     assert device is not None
     assert device.manufacturer == "Unique"
     assert device.model == "Smart Duo"
@@ -118,7 +120,9 @@ async def test_device_info_without_model(
     set_api_response(mock_api, [{**MOCK_DEVICE, "model": model}])
     assert await setup_integration(hass, mock_config_entry)
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, MOCK_SERIAL), mock_config_entry.entry_id
+    )
     assert device is not None
     assert device.model is None
     assert device.name == DEFAULT_DEVICE_NAME
@@ -134,7 +138,9 @@ async def test_device_info_with_missing_model_key(
     set_api_response(mock_api, [device_data])
     assert await setup_integration(hass, mock_config_entry)
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, MOCK_SERIAL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, MOCK_SERIAL), mock_config_entry.entry_id
+    )
     assert device is not None
     assert device.name == DEFAULT_DEVICE_NAME
 
