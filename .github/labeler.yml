@@ -1,0 +1,18 @@
+# Labels a pull request by what it touches, so a change to the documentation
+# or to what reaches an installation is recognisable in the list without
+# opening it.
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - README.md
+          - CONTRIBUTING.md
+          - SECURITY.md
+
+# What reaches an installation, so belongs in a release.
+integration:
+  - changed-files:
+      - any-glob-to-any-file: custom_components/**
+
+github_actions:
+  - changed-files:
+      - any-glob-to-any-file: .github/**

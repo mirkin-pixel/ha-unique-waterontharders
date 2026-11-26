@@ -29,6 +29,18 @@ The tests run on Windows too, even though Home Assistant itself only ever runs o
 
 Coverage has a floor of 95% over `custom_components/unique_waterontharder`, set in `pyproject.toml`. It is a floor rather than a target: a new branch of behaviour is expected to arrive with the test that pins it down.
 
+Every test also fails when Home Assistant reports that this integration uses something on its way out, the warning it logs with the version that will stop it working. So a deprecation is found in CI, not in a user's log.
+
+### The oldest supported Home Assistant
+
+`hacs.json` says which Home Assistant this needs at least: 2026.3. CI runs the tests against that release too, from `tests/oldest/requirements.txt`. That file sits outside the root on purpose: Dependabot updates every requirements file in the root, and a pin it raised would quietly stop testing the oldest release at all. Raising the minimum is allowed in a minor version: change `hacs.json`, the README and `tests/oldest/requirements.txt` together.
+
+### The upcoming Home Assistant
+
+Every Thursday, the day after a beta comes out, the **Upcoming Home Assistant** workflow installs the newest Home Assistant there is, beta included, loads every module against it, type-checks against it and runs the tests. It opens or updates an issue when any of that fails, and can be started by hand as well. The test harness is made for one Home Assistant version and can lag behind; when it cannot even start on the newest one, the run says so in its summary instead of opening an issue, and loading and type-checking still count.
+
+### In CI only
+
 Two more workflow jobs run in CI only, hassfest and HACS validation. They check the manifest and the repository layout rather than the code, so nothing they check changes on a normal code change.
 
 ## Translations
@@ -48,4 +60,6 @@ Anything else is a major version, with the change and what to do about it at the
 
 ## Releases
 
-The standard HACS flow: bump `version` in `manifest.json`, merge to the default branch, then publish a GitHub release with a matching tag, `v1.0.0` for version `1.0.0`. The release workflow checks that the tag matches the manifest version and attaches a zip of the integration to the release; HACS installs that zip, so a release without it cannot be installed.
+The standard HACS flow: bump `version` in `manifest.json`, merge to the default branch, then publish a GitHub release with a matching tag, `v1.0.0` for version `1.0.0`. The release workflow checks that the tag matches the manifest version, runs every check a pull request runs on the tagged code, and only then attaches a zip of the integration to the release, with its SHA-256 beside it. HACS installs that zip, so a release whose checks fail gets no zip and cannot be installed: fix the cause, then publish a new release.
+
+Before each release, read what the next Home Assistant changes for custom integrations: the developer blog at developers.home-assistant.io lists it a week ahead, with the beta. Anything that applies is fixed in the release, or noted in its release notes.

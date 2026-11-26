@@ -29,6 +29,24 @@ MOCK_DEVICE: dict[str, Any] = {
 
 
 @pytest.fixture(autouse=True)
+def no_deprecated_use(caplog: pytest.LogCaptureFixture) -> Any:
+    """Fail a test in which Home Assistant reports this integration's use of
+    something on its way out.
+
+    Home Assistant logs that with the version it stops working in; caught here,
+    it is found in CI, against the beta too, before a user finds it.
+    """
+    yield
+    reported = [
+        record.getMessage()
+        for record in caplog.get_records("call")
+        if f"Detected that custom integration '{DOMAIN}'" in record.getMessage()
+        or (DOMAIN in record.getMessage() and "deprecated" in record.getMessage())
+    ]
+    assert not reported, reported
+
+
+@pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
     """Enable loading custom integrations in all tests."""
 
