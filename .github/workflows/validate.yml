@@ -1,11 +1,23 @@
 name: Validate
 
 on:
+  # Branches are tested through their pull request; once on main as well.
   push:
+    branches: [main]
   pull_request:
   schedule:
     - cron: "0 4 * * 1"
   workflow_dispatch:
+
+# Every job here only reads the code. Said here rather than left to the
+# repository default, so it holds whatever that default is set to.
+permissions:
+  contents: read
+
+# A newer push to the same branch makes the running checks pointless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
@@ -20,6 +32,21 @@ jobs:
         run: pip install -r requirements_test.txt
       - name: Run ruff
         run: ruff check .
+      - name: Check formatting
+        run: ruff format --check .
+
+  types:
+    name: Mypy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Install test dependencies
+        run: pip install -r requirements_test.txt
+      - name: Run mypy
+        run: mypy
 
   tests:
     name: Tests
