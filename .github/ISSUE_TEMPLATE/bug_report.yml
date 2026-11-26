@@ -1,14 +1,13 @@
-name: Bug report
-description: Report a problem with the integration
+name: Something is not working
+description: An entity that is missing or wrong, a setup that fails, a value that makes no sense.
+title: "<what goes wrong, in a few words>"
 labels: ["bug"]
+assignees: ["mirkin-pixel"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting! A debug log and the diagnostics file let me trace
-        almost any problem directly — without them it is mostly guesswork.
-        See [Troubleshooting](../../#troubleshooting) in the README for how to
-        collect both.
+        Thank you for taking the time. A debug log and the diagnostics file let me trace almost any problem directly; without them it is mostly guesswork. The [troubleshooting section](https://github.com/mirkin-pixel/ha-unique-waterontharders#troubleshooting) of the README explains how to collect both. Not sure it is a bug? [Ask in Q&A](https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/new?category=q-a) first.
 
   - type: checkboxes
     id: checks
@@ -20,21 +19,29 @@ body:
         - label: I am running the latest version of the integration
           required: true
 
-  - type: input
-    id: integration_version
+  - type: textarea
+    id: what
     attributes:
-      label: Integration version
-      description: Shown in HACS, or found in `manifest.json`.
+      label: What happens, and what you expected instead
+      description: An entity name, a value you see and the value you think it should be, an error from the setup. A screenshot is welcome.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version of Unique Waterontharder
+      description: Shown in the Marketplace (HACS before Home Assistant 2026.11), or under Settings → Devices & services → Unique Waterontharder.
       placeholder: "1.0.0"
     validations:
       required: true
 
   - type: input
-    id: ha_version
+    id: homeassistant
     attributes:
-      label: Home Assistant version
-      description: Settings → About
-      placeholder: "2026.3.1"
+      label: Version of Home Assistant
+      description: Settings → About.
+      placeholder: "2026.11.2"
     validations:
       required: true
 
@@ -43,16 +50,8 @@ body:
     attributes:
       label: Installation method
       options:
-        - HACS
+        - Marketplace (HACS before Home Assistant 2026.11)
         - Manual
-    validations:
-      required: true
-
-  - type: textarea
-    id: description
-    attributes:
-      label: What is going wrong?
-      description: Describe what happens and what you expected to happen instead.
     validations:
       required: true
 
@@ -75,12 +74,7 @@ body:
     id: logs
     attributes:
       label: Debug log
-      description: |
-        Enable debug logging, reproduce the problem, then disable it again —
-        Home Assistant downloads the log automatically.
-
-        The API key is never logged. Your serial number is, so feel free to
-        remove it before pasting.
+      description: Enable debug logging, reproduce the problem, then disable it again; Home Assistant downloads the log automatically. The API key is never logged. Your serial number is, so feel free to remove it before pasting.
       render: text
     validations:
       required: true
@@ -89,7 +83,5 @@ body:
     id: diagnostics
     attributes:
       label: Diagnostics
-      description: |
-        Settings → Devices & services → Unique Waterontharder → ⋮ → Download
-        diagnostics, then drag the file into this field. The API key is
-        redacted automatically.
+      description: Settings → Devices & services → Unique Waterontharder, the three dots, **Download diagnostics**, and drag the file in here. The API key and the serial numbers are already left out of it.
+      placeholder: Drag the downloaded .json file here.

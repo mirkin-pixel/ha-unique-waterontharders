@@ -1,8 +1,14 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Question or support
-    url: https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions
-    about: Not a bug, just a question? Start a discussion instead.
+  - name: A question
+    url: https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/new?category=q-a
+    about: How to do something, or why it behaves the way it does. Asked and answered in Discussions.
+  - name: An idea
+    url: https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/new?category=ideas
+    about: Something the integration could do that it does not do yet. Shared and discussed in Discussions.
+  - name: Troubleshooting
+    url: https://github.com/mirkin-pixel/ha-unique-waterontharders#troubleshooting
+    about: How to collect a debug log and the diagnostics, which is what it usually takes to find the cause.
   - name: Problem with your softener or API key
     url: https://unique-smart.nl
     about: This is an unofficial integration. For hardware or API key issues, contact Unique.

@@ -1,0 +1,30 @@
+title: "<your question, in a few words>"
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for asking. A question is welcome here, and often ends up as a line in the README for the next person. Much is answered there already: the [README](https://github.com/mirkin-pixel/ha-unique-waterontharders#english) covers [configuration](https://github.com/mirkin-pixel/ha-unique-waterontharders#configuration), an [example automation](https://github.com/mirkin-pixel/ha-unique-waterontharders#example-automation) and [what the API returns](https://github.com/mirkin-pixel/ha-unique-waterontharders#about-the-api).
+
+        If something does not work as it should, the issue form [Something is not working](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues/new?template=bug_report.yml) asks for what is needed to find the cause. For a problem with the softener itself or your API key, contact [Unique](https://unique-smart.nl).
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What you want to know, or what you are trying to do. The situation helps more than the solution you have in mind.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried or read so far
+      description: A section of the README, a template, an automation, a dashboard card. Optional, but it saves explaining what you already know.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version of Unique Waterontharder
+      description: Shown in the Marketplace (HACS before Home Assistant 2026.11), or under Settings → Devices & services → Unique Waterontharder. Optional; it helps when an answer differs between versions.
+      placeholder: "1.0.0"
