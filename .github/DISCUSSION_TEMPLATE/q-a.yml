@@ -4,7 +4,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for asking. A question is welcome here, and often ends up as a line in the README for the next person. Much is answered there already: the [README](https://github.com/mirkin-pixel/ha-unique-waterontharders#english) covers [configuration](https://github.com/mirkin-pixel/ha-unique-waterontharders#configuration), an [example automation](https://github.com/mirkin-pixel/ha-unique-waterontharders#example-automation) and [what the API returns](https://github.com/mirkin-pixel/ha-unique-waterontharders#about-the-api).
+        Thank you for asking. A question is welcome here, and often ends up as a line in the README for the next person. Much is answered there already: the [README](https://github.com/mirkin-pixel/ha-unique-waterontharders#readme) covers [configuration](https://github.com/mirkin-pixel/ha-unique-waterontharders#configuration), an [example automation](https://github.com/mirkin-pixel/ha-unique-waterontharders#example-automation) and [what the API returns](https://github.com/mirkin-pixel/ha-unique-waterontharders#about-the-api).
 
         If something does not work as it should, the issue form [Something is not working](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues/new?template=bug_report.yml) asks for what is needed to find the cause. For a problem with the softener itself or your API key, contact [Unique](https://unique-smart.nl).
 
