@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.const import CONF_API_KEY, Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import device_registry as dr, issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.util import dt as dt_util
 
@@ -41,6 +41,11 @@ async def _async_update_listener(hass: HomeAssistant, entry: UniqueConfigEntry) 
 
 async def async_unload_entry(hass: HomeAssistant, entry: UniqueConfigEntry) -> bool:
     """Unload a config entry."""
+    # A setup after this one raises the repair issue again if it still applies,
+    # so it is not left behind for an entry that was removed.
+    ir.async_delete_issue(
+        hass, DOMAIN, entry.runtime_data.missing_serial_numbers_issue_id
+    )
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 

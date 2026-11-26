@@ -6,6 +6,8 @@ DOMAIN = "unique_waterontharder"
 
 API_URL = "https://unique-smart.nl/api/v1/data"
 
+ISSUES_URL = "https://github.com/mirkin-pixel/ha-unique-waterontharders/issues"
+
 # The API returns timestamps without a UTC offset, in the local time of the
 # Dutch service that hosts it. Interpreting them in Home Assistant's own time
 # zone would shift them for everyone outside the Netherlands.

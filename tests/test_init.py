@@ -8,7 +8,11 @@ import logging
 import aiohttp
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers import (
+    device_registry as dr,
+    entity_registry as er,
+    issue_registry as ir,
+)
 from homeassistant.util import dt as dt_util
 import pytest
 from pytest_homeassistant_custom_component.common import (
@@ -129,6 +133,12 @@ async def test_response_without_serial_numbers_warns_once(
 
     assert await setup_integration(hass, mock_config_entry)
     assert caplog.text.count("none with a 'serienummer' field") == 1
+    issue_id = f"missing_serial_numbers_{mock_config_entry.entry_id}"
+    issue_registry = ir.async_get(hass)
+    issue = issue_registry.async_get_issue(DOMAIN, issue_id)
+    assert issue is not None
+    assert issue.translation_key == "missing_serial_numbers"
+    assert not issue.is_fixable
 
     async def _poll_with(devices: list[dict]) -> None:
         set_api_response(aioclient_mock, devices)
@@ -141,12 +151,31 @@ async def test_response_without_serial_numbers_warns_once(
     await _poll_with(unusable)
     assert caplog.text.count("none with a 'serienummer' field") == 1
 
-    # Recovery is logged, and a later relapse warns again
+    # Recovery is logged and clears the repair issue; a relapse raises both again
     await _poll_with([MOCK_DEVICE])
     assert "returns serial numbers again" in caplog.text
+    assert issue_registry.async_get_issue(DOMAIN, issue_id) is None
 
     await _poll_with(unusable)
     assert caplog.text.count("none with a 'serienummer' field") == 2
+    assert issue_registry.async_get_issue(DOMAIN, issue_id) is not None
+
+
+async def test_unload_clears_the_repair_issue(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    aioclient_mock: AiohttpClientMocker,
+) -> None:
+    """Test that removing the entry does not leave its repair issue behind."""
+    aioclient_mock.get(API_URL, json=[{"model": "Smart Duo"}])
+    assert await setup_integration(hass, mock_config_entry)
+    issue_id = f"missing_serial_numbers_{mock_config_entry.entry_id}"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is not None
+
+    assert await hass.config_entries.async_remove(mock_config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
 
 
 async def test_stale_device_can_be_removed(

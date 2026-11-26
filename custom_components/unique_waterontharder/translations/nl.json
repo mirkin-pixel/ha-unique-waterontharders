@@ -88,5 +88,11 @@
         "name": "Offline-alarm"
       }
     }
+  },
+  "issues": {
+    "missing_serial_numbers": {
+      "title": "De Unique Smart API geeft geen serienummers meer terug",
+      "description": "De Unique Smart API antwoordt wel, maar geen van de ontharders in het antwoord heeft een serienummer. Elk apparaat en elke entiteit van deze integratie hangt aan dat nummer, dus die blijven onbeschikbaar tot het terug is.\n\nWaarschijnlijk is er iets veranderd aan de kant van Unique; het ligt niet aan je installatie of API-key. Je hoeft hier niets te doen: deze melding verdwijnt vanzelf zodra de API weer serienummers teruggeeft. Blijft ze staan, open dan een issue met een debug-log, zodat de integratie op het nieuwe antwoord aangepast kan worden."
+    }
   }
 }
