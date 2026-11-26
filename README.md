@@ -77,15 +77,17 @@ Notification when the salt is running low:
 ```yaml
 automation:
   - alias: "Water softener: refill salt"
-    trigger:
-      - platform: numeric_state
+    triggers:
+      - trigger: numeric_state
         entity_id: sensor.unique_smart_duo_salt_level
         below: 20
-    action:
-      - service: notify.mobile_app
+    actions:
+      - action: notify.mobile_app_your_phone
         data:
           message: "The salt level of the water softener is below 20%. Time to refill!"
 ```
+
+Replace `notify.mobile_app_your_phone` with the notify action of your own phone; **Developer tools → Actions** lists them under `notify.mobile_app_…`. The entity ID of the salt level depends on the model and the language Home Assistant was set to when the softener was added; you find it on the device page.
 
 ### About the API
 
@@ -206,15 +208,17 @@ Melding wanneer het zout bijna op is:
 ```yaml
 automation:
   - alias: "Waterontharder: zout bijvullen"
-    trigger:
-      - platform: numeric_state
+    triggers:
+      - trigger: numeric_state
         entity_id: sensor.unique_smart_duo_zoutniveau
         below: 20
-    action:
-      - service: notify.mobile_app
+    actions:
+      - action: notify.mobile_app_jouw_telefoon
         data:
           message: "Het zoutniveau van de waterontharder is onder de 20%. Tijd om bij te vullen!"
 ```
+
+Vervang `notify.mobile_app_jouw_telefoon` door de notify-actie van je eigen telefoon; je vindt ze onder **Ontwikkelhulpmiddelen → Acties** als `notify.mobile_app_…`. De entiteit-ID van het zoutniveau hangt af van het model en van de taal waarin Home Assistant stond toen de ontharder werd toegevoegd; je vindt hem op de apparaatpagina.
 
 ### Over de API
 
