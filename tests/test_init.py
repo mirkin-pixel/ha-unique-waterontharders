@@ -9,7 +9,6 @@ import aiohttp
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import (
-    device_registry as dr,
     entity_registry as er,
     issue_registry as ir,
 )
@@ -28,7 +27,13 @@ from custom_components.unique_waterontharder.const import (
     UPDATE_INTERVAL,
 )
 
-from .conftest import MOCK_DEVICE, MOCK_SERIAL, set_api_response, setup_integration
+from .conftest import (
+    MOCK_DEVICE,
+    MOCK_SERIAL,
+    our_device,
+    set_api_response,
+    setup_integration,
+)
 
 
 async def test_setup_and_unload(
@@ -186,10 +191,7 @@ async def test_stale_device_can_be_removed(
     """Test that only softeners missing from the API may be removed."""
     assert await setup_integration(hass, mock_config_entry)
 
-    device_registry = dr.async_get(hass)
-    device = device_registry.async_get_device_by_identifier(
-        (DOMAIN, MOCK_SERIAL), mock_config_entry.entry_id
-    )
+    device = our_device(hass, mock_config_entry)
     assert device is not None
 
     # A softener that the API still reports must not be removable
