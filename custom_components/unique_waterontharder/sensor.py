@@ -100,6 +100,7 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
     UniqueSensorEntityDescription(
         key="average_regeneration_interval",
         translation_key="average_regeneration_interval",
+        device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data, _tz: _as_float(data.get("gemiddeld")),
@@ -112,6 +113,9 @@ SENSORS: tuple[UniqueSensorEntityDescription, ...] = (
         # degrees dH per cubic metre, would be roughly five times higher for
         # the same cylinder. Deliberately no state class: this is a fixed
         # property of the hardware, not a measurement to keep statistics on.
+        # VOLUME_STORAGE rather than VOLUME, as it is a stored amount and not
+        # a volume that flows through the softener.
+        device_class=SensorDeviceClass.VOLUME_STORAGE,
         native_unit_of_measurement=UnitOfVolume.LITERS,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data, _tz: _as_number(data.get("capaciteit")),

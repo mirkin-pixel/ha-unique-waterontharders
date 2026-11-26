@@ -4,8 +4,14 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from homeassistant.components.sensor import ATTR_STATE_CLASS
-from homeassistant.const import ATTR_UNIT_OF_MEASUREMENT, STATE_UNKNOWN, UnitOfVolume
+from homeassistant.components.sensor import ATTR_STATE_CLASS, SensorDeviceClass
+from homeassistant.const import (
+    ATTR_DEVICE_CLASS,
+    ATTR_UNIT_OF_MEASUREMENT,
+    STATE_UNKNOWN,
+    UnitOfTime,
+    UnitOfVolume,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
@@ -47,13 +53,16 @@ async def test_sensor_states(
 
     assert hass.states.get(_entity_id(hass, "salt_level")).state == "80.0"
     assert hass.states.get(_entity_id(hass, "regenerations")).state == "42"
-    assert (
-        hass.states.get(_entity_id(hass, "average_regeneration_interval")).state
-        == "3.5"
-    )
+    interval = hass.states.get(_entity_id(hass, "average_regeneration_interval"))
+    assert interval.state == "3.5"
+    assert interval.attributes[ATTR_UNIT_OF_MEASUREMENT] == UnitOfTime.DAYS
+    # A duration, so a user can show it in hours or weeks instead
+    assert interval.attributes[ATTR_DEVICE_CLASS] == SensorDeviceClass.DURATION
     capacity = hass.states.get(_entity_id(hass, "capacity"))
     assert capacity.state == "10"
     assert capacity.attributes[ATTR_UNIT_OF_MEASUREMENT] == UnitOfVolume.LITERS
+    # A stored volume, so a user can show it in gallons instead
+    assert capacity.attributes[ATTR_DEVICE_CLASS] == SensorDeviceClass.VOLUME_STORAGE
     # A fixed property of the hardware, so no long-term statistics
     assert ATTR_STATE_CLASS not in capacity.attributes
 
