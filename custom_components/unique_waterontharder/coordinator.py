@@ -10,10 +10,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import UniqueApiAuthError, UniqueApiClient, UniqueApiError
-from .const import DEFAULT_SCAN_INTERVAL_MINUTES, DOMAIN
+from .const import DEFAULT_SCAN_INTERVAL_MINUTES, DOMAIN, ISSUES_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,6 +48,11 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
         self.client = client
         self.api_timezone = api_timezone
         self._warned_no_serial_numbers = False
+
+    @property
+    def missing_serial_numbers_issue_id(self) -> str:
+        """Return the repair issue ID for this entry; one per API key."""
+        return f"missing_serial_numbers_{self.config_entry.entry_id}"
 
     async def _async_update_data(self) -> dict[str, dict[str, Any]]:
         """Fetch data and key it by serial number."""
@@ -83,6 +89,17 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
                     len(skipped),
                     skipped[0],
                 )
+                # The log is easy to miss; an empty integration is not something
+                # the user can fix, but they should know why it is empty.
+                ir.async_create_issue(
+                    self.hass,
+                    DOMAIN,
+                    self.missing_serial_numbers_issue_id,
+                    is_fixable=False,
+                    severity=ir.IssueSeverity.WARNING,
+                    translation_key="missing_serial_numbers",
+                    learn_more_url=ISSUES_URL,
+                )
         elif skipped:
             _LOGGER.debug(
                 "Skipped %d entry/entries without a 'serienummer' field: %s",
@@ -93,6 +110,9 @@ class UniqueDataUpdateCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
         if data and self._warned_no_serial_numbers:
             self._warned_no_serial_numbers = False
             _LOGGER.info("The Unique Smart API returns serial numbers again")
+            ir.async_delete_issue(
+                self.hass, DOMAIN, self.missing_serial_numbers_issue_id
+            )
 
         _LOGGER.debug("Updated data for serial number(s): %s", sorted(data))
 

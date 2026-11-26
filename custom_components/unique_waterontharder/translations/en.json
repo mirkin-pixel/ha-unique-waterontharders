@@ -88,5 +88,11 @@
         "name": "Offline alert"
       }
     }
+  },
+  "issues": {
+    "missing_serial_numbers": {
+      "title": "The Unique Smart API no longer returns serial numbers",
+      "description": "The Unique Smart API answers, but none of the softeners in its response has a serial number. Every device and entity of this integration is keyed by that number, so they stay unavailable until it is back.\n\nThis is most likely a change on the side of Unique, not a problem with your setup or API key. Nothing needs to be done here: this message disappears by itself once the API returns serial numbers again. If it stays, please open an issue with a debug log, so the integration can be adapted to the new response."
+    }
   }
 }
