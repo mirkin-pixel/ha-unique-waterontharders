@@ -1,0 +1,6 @@
+# The oldest Home Assistant hacs.json promises, 2026.3. There is no harness
+# release for 2026.3.0 itself; this one pins 2026.3.1, the first after it.
+# Kept outside the root on purpose: Dependabot updates every requirements file
+# there, and a pin it raised would quietly stop testing the oldest release.
+# Raise it together with hacs.json and the README.
+pytest-homeassistant-custom-component==0.13.317

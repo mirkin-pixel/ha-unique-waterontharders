@@ -7,11 +7,14 @@ on:
 permissions: {}
 
 jobs:
-  release:
-    name: Attach integration zip to release
+  checks:
+    # The same checks as a pull request, on the tagged code itself. HACS
+    # installs a release from its zip, so a release whose checks fail gets
+    # none and cannot be installed by mistake.
+    name: Check the tagged code
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v7
 
@@ -25,12 +28,39 @@ jobs:
             exit 1
           fi
 
-      - name: Create zip
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Install test dependencies
+        run: pip install -r requirements_test.txt
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Mypy
+        run: mypy
+      - name: Tests
+        run: pytest
+
+  release:
+    name: Attach integration zip to release
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create zip and its checksum
         run: |
           cd custom_components/unique_waterontharder
           zip -r ../../unique_waterontharder.zip .
+          cd ../..
+          sha256sum unique_waterontharder.zip > unique_waterontharder.zip.sha256
 
       - name: Upload zip to release
         uses: softprops/action-gh-release@v3
         with:
-          files: unique_waterontharder.zip
+          files: |
+            unique_waterontharder.zip
+            unique_waterontharder.zip.sha256

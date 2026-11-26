@@ -6,6 +6,7 @@ from typing import Any
 
 from homeassistant.const import CONF_API_KEY
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
@@ -26,6 +27,24 @@ MOCK_DEVICE: dict[str, Any] = {
     "offline_alert": 0,
     "zout_niveau": 80,
 }
+
+
+@pytest.fixture(autouse=True)
+def no_deprecated_use(caplog: pytest.LogCaptureFixture) -> Any:
+    """Fail a test in which Home Assistant reports this integration's use of
+    something on its way out.
+
+    Home Assistant logs that with the version it stops working in; caught here,
+    it is found in CI, against the beta too, before a user finds it.
+    """
+    yield
+    reported = [
+        record.getMessage()
+        for record in caplog.get_records("call")
+        if f"Detected that custom integration '{DOMAIN}'" in record.getMessage()
+        or (DOMAIN in record.getMessage() and "deprecated" in record.getMessage())
+    ]
+    assert not reported, reported
 
 
 @pytest.fixture(autouse=True)
@@ -64,3 +83,21 @@ async def setup_integration(hass: HomeAssistant, entry: MockConfigEntry) -> bool
     result = await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
     return result
+
+
+def our_device(hass: HomeAssistant, entry: MockConfigEntry) -> dr.DeviceEntry | None:
+    """Return the device the entry registered for the mocked softener.
+
+    Asked of the entry rather than of whatever device carries the identifier,
+    so a test cannot pass on a device another entry left behind. Newer Home
+    Assistant asks that in one call; the oldest release this integration
+    supports does not have it yet, so there the entry is checked by hand.
+    """
+    registry = dr.async_get(hass)
+    identifier = (DOMAIN, MOCK_SERIAL)
+    if hasattr(registry, "async_get_device_by_identifier"):
+        return registry.async_get_device_by_identifier(identifier, entry.entry_id)
+    device = registry.async_get_device(identifiers={identifier})
+    if device is None or entry.entry_id not in device.config_entries:
+        return None
+    return device
