@@ -20,8 +20,12 @@ There is no Home Assistant installation to keep alongside this. The tests bring 
 
 ```bash
 ruff check .        # style and imports
+ruff format .       # layout; CI runs it with --check
+mypy                # types, over custom_components/unique_waterontharder
 pytest --cov        # tests, and the coverage floor
 ```
+
+The tests run on Windows too, even though Home Assistant itself only ever runs on Linux and imports two modules CPython ships on POSIX alone. `pytest_windows.py` stands in for `fcntl` and `resource`, and lets the event loop have the loopback socket pair it wakes itself over, which `pytest-socket` would otherwise refuse. It is loaded through `addopts` in `pyproject.toml` and does nothing at all on Linux, so the same `pytest` runs in both places.
 
 Coverage has a floor of 95% over `custom_components/unique_waterontharder`, set in `pyproject.toml`. It is a floor rather than a target: a new branch of behaviour is expected to arrive with the test that pins it down.
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.config_entries import (
     ConfigEntry,
@@ -20,7 +20,13 @@ from homeassistant.helpers.selector import (
     NumberSelectorConfig,
     NumberSelectorMode,
 )
-import voluptuous as vol
+
+# Since 2026.10 Home Assistant runs probatio under the name voluptuous; only
+# the type checker needs to be told.
+if TYPE_CHECKING:
+    import probatio as vol
+else:
+    import voluptuous as vol
 
 from .api import UniqueApiAuthError, UniqueApiClient, UniqueApiError
 from .const import (
