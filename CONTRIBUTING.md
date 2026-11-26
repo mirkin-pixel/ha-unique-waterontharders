@@ -1,6 +1,6 @@
 # Contributing
 
-This file is for people working on the integration. If you are looking for how to install or configure it, that is the [README](README.md), which is the page HACS shows. The README has an English and a Dutch section side by side: a change to one belongs in the other. If you do not write Dutch, put your English text in the Dutch section as well and say so in the pull request; it is translated before the merge.
+This file is for people working on the integration. If you are looking for how to install or configure it, that is the [README](README.md), which is the page the Marketplace shows (HACS before Home Assistant 2026.11), and its Dutch counterpart in [`docs/nl`](docs/nl/README.md), where the README's link leads. Both languages are kept side by side: a change to one belongs in the other. If you do not write Dutch, put your English text in the Dutch page as well and say so in the pull request; it is translated before the merge.
 
 Contributions are welcome. For anything larger than a fix, an [idea in Discussions](https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/new?category=ideas) first is appreciated, so nobody writes the same thing twice.
 
