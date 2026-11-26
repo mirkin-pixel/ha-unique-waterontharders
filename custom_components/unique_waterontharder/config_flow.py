@@ -10,7 +10,7 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
-    OptionsFlow,
+    OptionsFlowWithReload,
 )
 from homeassistant.const import CONF_API_KEY, CONF_SCAN_INTERVAL, UnitOfTime
 from homeassistant.core import callback
@@ -60,23 +60,6 @@ class UniqueConfigFlow(ConfigFlow, domain=DOMAIN):
             return "unknown"
         return None
 
-    def _async_store_api_key(
-        self, entry: ConfigEntry, api_key: str, reason: str
-    ) -> ConfigFlowResult:
-        """Store a new API key on an existing entry and reload it.
-
-        The entry's update listener performs the reload, which is what Home
-        Assistant expects of an integration that has one. Re-entering the same
-        key leaves the entry unchanged and therefore does not notify that
-        listener, so the reload is scheduled here instead: an entry that failed
-        to set up must still recover.
-        """
-        if not self.hass.config_entries.async_update_entry(
-            entry, data={**entry.data, CONF_API_KEY: api_key}
-        ):
-            self.hass.config_entries.async_schedule_reload(entry.entry_id)
-        return self.async_abort(reason=reason)
-
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -112,8 +95,10 @@ class UniqueConfigFlow(ConfigFlow, domain=DOMAIN):
             api_key = user_input[CONF_API_KEY].strip()
             error = await self._async_validate_api_key(api_key)
             if error is None:
-                return self._async_store_api_key(
-                    self._get_reauth_entry(), api_key, "reauth_successful"
+                # Reloads even when the key is unchanged, so an entry that
+                # failed to set up still recovers.
+                return self.async_update_reload_and_abort(
+                    self._get_reauth_entry(), data_updates={CONF_API_KEY: api_key}
                 )
             errors["base"] = error
 
@@ -139,8 +124,8 @@ class UniqueConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_abort(reason="already_configured")
             error = await self._async_validate_api_key(api_key)
             if error is None:
-                return self._async_store_api_key(
-                    entry, api_key, "reconfigure_successful"
+                return self.async_update_reload_and_abort(
+                    entry, data_updates={CONF_API_KEY: api_key}
                 )
             errors["base"] = error
 
@@ -151,8 +136,8 @@ class UniqueConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
 
-class UniqueOptionsFlow(OptionsFlow):
-    """Handle the options for an existing entry."""
+class UniqueOptionsFlow(OptionsFlowWithReload):
+    """Handle the options for an existing entry; a change reloads it."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
