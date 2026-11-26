@@ -112,6 +112,13 @@ Debug logging shows the HTTP status of every poll, the full API response, the se
 
 **Download diagnostics.** On the same page, choose **Download diagnostics**. The file contains the configuration entry, the selected options and the last API data. The API key and the serial numbers are redacted, so the file is safe to attach to an issue.
 
+### Questions, ideas and bugs
+
+- A question, how to do something or why the integration behaves the way it does: ask in [Q&A](https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/categories/q-a).
+- An idea, something the integration could do that it does not do yet: share it in [Ideas](https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/categories/ideas).
+- Something that does not work: open an [issue](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues/new?template=bug_report.yml), with the debug log and diagnostics described above.
+- A problem with the softener itself or your API key: contact [Unique](https://unique-smart.nl).
+
 ### Development
 
 Tests run with [pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) and require Python 3.14 or newer:
@@ -233,6 +240,15 @@ logger:
 In de debug-log zie je de HTTP-status van elke poll, de volledige API-respons, de gevonden serienummers en elke waarde die de integratie niet kon verwerken. De API-key wordt nooit gelogd.
 
 **Diagnostiek downloaden.** Kies op dezelfde pagina **Diagnostische gegevens downloaden**. Het bestand bevat de configuratie, de gekozen opties en de laatst opgehaalde API-gegevens. De API-key en de serienummers zijn weggehaald, dus je kunt het bestand veilig aan een issue hangen.
+
+### Vragen, ideeën en bugs
+
+- Een vraag, hoe je iets doet of waarom de integratie zich zo gedraagt: stel hem in [Q&A](https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/categories/q-a).
+- Een idee, iets wat de integratie nog niet kan: deel het in [Ideas](https://github.com/mirkin-pixel/ha-unique-waterontharders/discussions/categories/ideas).
+- Iets wat niet werkt: open een [issue](https://github.com/mirkin-pixel/ha-unique-waterontharders/issues/new?template=bug_report.yml), met de debug-log en diagnostiek die hierboven beschreven staan.
+- Een probleem met de ontharder zelf of je API-key: neem contact op met [Unique](https://unique-smart.nl).
+
+Vragen en ideeën mogen in het Nederlands; antwoorden komen in het Engels, zodat iedereen kan meelezen.
 
 ### Ontwikkeling
 

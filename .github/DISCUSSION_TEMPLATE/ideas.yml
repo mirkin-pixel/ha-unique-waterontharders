@@ -1,0 +1,44 @@
+title: "<what you would like, in a few words>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. One thing decides most ideas, so it is worth knowing up front: this integration is a read-only mirror of the Unique Smart API, so what it can show is bounded by what that API returns. If you are asking for a new sensor, the fastest way to get it added is to show that the data is already in the API response; see the last field below.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What you want to do
+      description: The situation rather than the solution. "I want to be warned a week before the salt runs out" says more than "add a sensor for days until empty".
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of idea is this?
+      options:
+        - A new entity for data the API already returns
+        - A configuration option
+        - A change to an existing entity
+        - Something else
+
+  - type: textarea
+    id: how
+    attributes:
+      label: How you picture it
+      description: An entity, an attribute, an option, a line in the documentation. Optional; the first answer is the one that matters.
+
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do today instead
+      description: A template sensor, an automation, another integration. It helps to see how close the integration already gets.
+
+  - type: textarea
+    id: api_data
+    attributes:
+      label: Relevant API data
+      description: Only for a new entity. Download diagnostics (Settings → Devices & services → Unique Waterontharder, the three dots, **Download diagnostics**) and paste the field you want exposed. The API key is left out automatically. If the field is not in there, the integration cannot read it either and the request has to go to Unique instead.
+      render: json
