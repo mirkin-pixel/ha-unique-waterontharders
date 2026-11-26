@@ -2,13 +2,19 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from json import dumps as json_dumps
+import logging
 from typing import Any
+from unittest.mock import patch
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import pytest
-from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
+from pytest_homeassistant_custom_component.test_util.aiohttp import (
+    AiohttpClientMocker,
+    AiohttpClientMockResponse,
+)
 
 from custom_components.unique_waterontharder.api import (
     UniqueApiAuthError,
@@ -72,6 +78,30 @@ async def test_unexpected_response(
         await _client(hass).async_get_data()
 
 
+async def test_unexpected_response_keeps_the_body_out_of_the_error(
+    hass: HomeAssistant,
+    aioclient_mock: AiohttpClientMocker,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that the error names the type only, and the body goes to debug.
+
+    The error reaches the regular log through UpdateFailed, where a serial
+    number in the body would otherwise end up without debug logging enabled.
+    """
+    aioclient_mock.get(API_URL, json={"serienummer": 12345678})
+
+    with (
+        caplog.at_level(logging.DEBUG),
+        pytest.raises(UniqueApiError) as err,
+    ):
+        await _client(hass).async_get_data()
+
+    assert str(err.value) == (
+        "Unexpected response from the Unique Smart API: expected a list, got dict"
+    )
+    assert "12345678" in caplog.text
+
+
 @pytest.mark.parametrize(
     "body", ["", "<html>maintenance</html>"], ids=["empty", "html"]
 )
@@ -94,3 +124,19 @@ async def test_auth_error(
 
     with pytest.raises(UniqueApiAuthError):
         await _client(hass).async_get_data()
+
+
+@pytest.mark.parametrize("status", [200, 401, 500])
+async def test_response_is_released(
+    hass: HomeAssistant, aioclient_mock: AiohttpClientMocker, status: int
+) -> None:
+    """Test that the connection goes back to the pool on every path."""
+    aioclient_mock.get(API_URL, status=status, json=[MOCK_DEVICE])
+
+    with (
+        patch.object(AiohttpClientMockResponse, "release") as release,
+        suppress(UniqueApiError),
+    ):
+        await _client(hass).async_get_data()
+
+    release.assert_called_once()

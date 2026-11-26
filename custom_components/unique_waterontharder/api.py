@@ -33,8 +33,12 @@ class UniqueApiClient:
         """Fetch the list of water softeners."""
         headers = {"Authorization": f"Bearer {self._api_key}"}
         try:
-            async with asyncio.timeout(30):
-                response = await self._session.get(API_URL, headers=headers)
+            # The context manager hands the connection back to the pool on every
+            # path, including the auth error raised before the body is read.
+            async with (
+                asyncio.timeout(30),
+                self._session.get(API_URL, headers=headers) as response,
+            ):
                 _LOGGER.debug("GET %s returned HTTP %s", API_URL, response.status)
                 if response.status in (401, 403):
                     raise UniqueApiAuthError("Invalid API key")
@@ -56,8 +60,12 @@ class UniqueApiClient:
             ) from err
 
         if not isinstance(data, list):
+            # The error ends up in the regular log, so it names the type only;
+            # the body itself can hold serial numbers and goes to debug.
+            _LOGGER.debug("Unexpected response from the API: %r", data)
             raise UniqueApiError(
-                f"Unexpected response from the Unique Smart API: {data!r}"
+                "Unexpected response from the Unique Smart API: expected a list, "
+                f"got {type(data).__name__}"
             )
 
         _LOGGER.debug("Received %d device(s) from the API: %s", len(data), data)
